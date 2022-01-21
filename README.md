@@ -9,6 +9,10 @@ Find the best words to guess in a game like
 
 ## Usage
 
+Command Line Arguments:
+
+    flw --help
+
 Get the best starting words:
 
     flw | head
@@ -44,7 +48,8 @@ required letter in its known position.
 [Josh Wardle](https://www.powerlanguage.co.uk/). This utility uses
 [letter frequencies](https://www3.nd.edu/~busiforc/handouts/cryptography/letterfrequencies.html)
 from the _Concise Oxford Dictionary_ (9th edition, 1995). It assumes you
-have list of words available at `/usr/share/dict/words`.
+have list of words available at `/usr/share/dict/words`. To specify an
+alternative word list, use the `--word-list` or `-w` argument.
 
 I created this as an exercise for myself. I imagine there are other
 implementations. I purposely did not seek out prior art before writing this.

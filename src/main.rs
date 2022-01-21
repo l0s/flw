@@ -28,6 +28,7 @@ use std::fs::File;
 use std::io::stdout;
 use std::io::Write;
 use std::io::{BufRead, BufReader};
+use clap::Parser;
 
 /// Determine how likely a word is to narrow the possible target words
 ///
@@ -47,7 +48,18 @@ fn score(word: &str, scores: &HashMap<char, f32>) -> f32 {
     result
 }
 
+#[derive(Parser, Debug)]
+#[clap(author, version, about, long_about = None)]
+struct Arguments {
+    #[clap(short, long, default_value = "/usr/share/dict/words")]
+    word_list: String,
+
+    #[clap(short, long, default_value_t = 5)]
+    length: u8,
+}
+
 fn main() {
+    let arguments = Arguments::parse();
     // letter frequencies from: https://www3.nd.edu/~busiforc/handouts/cryptography/letterfrequencies.html
     let letter_scores: HashMap<char, f32> = HashMap::from([
         ('e', 56.88),
@@ -77,11 +89,12 @@ fn main() {
         ('j', 1.00),
         ('q', 1.00),
     ]);
-    let file = File::open("/usr/share/dict/words").expect("Unable to open dictionary");
+    let file = File::open(arguments.word_list.clone())
+        .unwrap_or_else(|_| panic!("Unable to open dictionary: {}", arguments.word_list));
     let lines = BufReader::new(file).lines();
     let mut candidates = lines
         .filter_map(|result| result.ok())
-        .filter(|word| word.len() == 5)
+        .filter(|word| word.len() == arguments.length as usize)
         .filter(|word| word.to_lowercase().eq(word))
         .map(|word| (word.clone(), score(&word, &letter_scores)))
         .collect::<Vec<(String, f32)>>();
